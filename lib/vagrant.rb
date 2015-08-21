@@ -227,6 +227,22 @@ module Vagrant
       requirements: requirements.join(", "),
       version: VERSION
   end
+
+  # This allows plugin developers to access the original environment before
+  # Vagrant even ran. This is useful when shelling out, especially to other
+  # Ruby processes.
+  #
+  # @return [Hash]
+  def self.original_env
+    {}.tap do |h|
+      ENV.each do |k,v|
+        if k.start_with?("VAGRANT_OLD_ENV")
+          key = k.sub(/^VAGRANT_OLD_ENV_/, "")
+          h[key] = v
+        end
+      end
+    end
+  end
 end
 
 # Default I18n to load the en locale
@@ -272,7 +288,7 @@ end
 if Vagrant.plugins_enabled?
   begin
     global_logger.info("Loading plugins!")
-    Bundler.require(:plugins)
+    $vagrant_bundler_runtime.require(:plugins)
   rescue Exception => e
     raise Vagrant::Errors::PluginLoadError, message: e.to_s
   end

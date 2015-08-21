@@ -14,7 +14,9 @@ module Vagrant
     class Downloader
       # Custom user agent provided to cURL so that requests to URL shorteners
       # are properly tracked.
-      USER_AGENT = "Vagrant/#{VERSION}"
+      #
+      #     Vagrant/1.7.4 (+https://www.vagrantup.com; ruby2.1.0)
+      USER_AGENT = "Vagrant/#{VERSION} (+https://www.vagrantup.com; #{RUBY_ENGINE}#{RUBY_VERSION})".freeze
 
       attr_reader :source
       attr_reader :destination
@@ -27,7 +29,7 @@ module Vagrant
         @destination = destination.to_s
 
         begin
-          url = URI.parse(URI.escape(@source))
+          url = URI.parse(@source)
           if url.scheme && url.scheme.start_with?("http") && url.user
             auth = "#{URI.unescape(url.user)}"
             auth += ":#{URI.unescape(url.password)}" if url.password

@@ -720,6 +720,10 @@ module Vagrant
       error_key(:vboxmanage_error)
     end
 
+    class VBoxManageLaunchError < VagrantError
+      error_key(:vboxmanage_launch_error)
+    end
+
     class VBoxManageNotFoundError < VagrantError
       error_key(:vboxmanage_not_found_error)
     end
@@ -758,6 +762,10 @@ module Vagrant
 
     class VirtualBoxNameExists < VagrantError
       error_key(:virtualbox_name_exists)
+    end
+
+    class VirtualBoxUserMismatch < VagrantError
+      error_key(:virtualbox_user_mismatch)
     end
 
     class VirtualBoxVersionEmpty < VagrantError

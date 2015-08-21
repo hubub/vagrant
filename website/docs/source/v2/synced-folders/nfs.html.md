@@ -65,11 +65,29 @@ the final part of the `config.vm.synced_folder` definition, along with the
 * `nfs_version` (string | integer) - The NFS protocol version to use when
   mounting the folder on the guest. This defaults to 3.
 
+## NFS Global Options
+
+There are also more global NFS options you can set with `config.nfs` in
+the Vagrantfile. These are documented below:
+
+* `functional` (bool) - Defaults to true. If false, then NFS won't be used
+  as a synced folder type. If a synced folder specifically requests NFS,
+  it will error.
+
+* `map_uid` and `map_gid` (int) - The UID/GID, respectively, to map all
+  read/write requests too. This will not affect the owner/group within the
+  guest machine itself, but any writes will behave as if they were written
+  as this UID/GID on the host. This defaults to the current user running
+  Vagrant.
+
+* `verify_installed` (bool) - Defaults to true. If this is false, then
+  Vagrant will skip checking if NFS is installed.
+
 ## Specifying NFS Arguments
 
 In addition to the options specified above, it is possible for Vagrant to
-specify additional NFS arguments when mounting the NFS share by using the
-`mount_options` key. For example, to append the `actimeo=2` client mount option:
+specify alternate NFS arguments when mounting the NFS share by using the
+`mount_options` key. For example, to use the `actimeo=2` client mount option:
 
 ```
 config.vm.synced_folder ".", "/vagrant",
@@ -78,7 +96,7 @@ config.vm.synced_folder ".", "/vagrant",
 ```
 
 This would result in the following `mount` command being executed on the guest:
- 
+
 ```
 mount -o 'actimeo=2' 172.28.128.1:'/path/to/vagrantfile' /vagrant
 ```
@@ -120,6 +138,8 @@ Below, we have a couple example sudoers entries. Note that you may
 have to modify them _slightly_ on certain hosts because the way Vagrant
 modifies `/etc/exports` changes a bit from OS to OS.
 
+All of the snippets below require Vagrant version 1.7.3 or higher.
+
 For OS X, sudoers should have this entry:
 
 ```
@@ -151,3 +171,11 @@ Cmnd_Alias VAGRANT_NFSD_APPLY = /usr/sbin/exportfs -ar
 Cmnd_Alias VAGRANT_EXPORTS_REMOVE = /bin/sed -r -e * d -ibak /etc/exports
 %vagrant ALL=(root) NOPASSWD: VAGRANT_EXPORTS_ADD, VAGRANT_NFSD_CHECK, VAGRANT_NFSD_START, VAGRANT_NFSD_APPLY, VAGRANT_EXPORTS_REMOVE
 ```
+
+## Other Notes
+
+**Encrypted folders:** If you have an encrypted disk, then NFS very often
+will refuse to export the filesystem. The error message given by NFS is
+often not clear. One error message seen is `<path> does not support NFS`.
+There is no workaround for this other than sharing a directory which isn't
+encrypted.
