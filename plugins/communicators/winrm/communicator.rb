@@ -131,12 +131,13 @@ module VagrantPlugins
           error_key:   nil, # use the error_class message key
           good_exit:   0,
           shell:       :powershell,
+          interactive: false,
         }.merge(opts || {})
 
         opts[:good_exit] = Array(opts[:good_exit])
 
         if opts[:elevated]
-          guest_script_path = create_elevated_shell_script(command)
+          guest_script_path = create_elevated_shell_script(command, opts[:interactive])
           command = "powershell -executionpolicy bypass -file #{guest_script_path}"
         end
 
@@ -193,12 +194,13 @@ module VagrantPlugins
       # that WinRM puts in place.
       #
       # @return The path to elevated_shell.ps1 on the guest
-      def create_elevated_shell_script(command)
+      def create_elevated_shell_script(command, interactive)
         path = File.expand_path("../scripts/elevated_shell.ps1", __FILE__)
         script = Vagrant::Util::TemplateRenderer.render(path, options: {
           username: shell.username,
           password: shell.password,
           command: command.gsub("\"", "`\""),
+          interactive: interactive,
         })
         guest_script_path = "c:/tmp/vagrant-elevated-shell.ps1"
         file = Tempfile.new(["vagrant-elevated-shell", "ps1"])

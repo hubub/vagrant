@@ -1863,7 +1863,7 @@ en:
 
           %{manifest}
         environment_missing: |-
-          The configured Puppet environment folder %{environment} was not found in the 
+          The configured Puppet environment folder %{environment} was not found in the
           specified environmentpath %{environmentpath}.
           Please specify a path to an existing Puppet directory environment.
         environment_path_missing: "The environment path specified for Puppet does not exist: %{path}"
@@ -1904,6 +1904,7 @@ en:
         running: "Running: %{script}"
         runningas: "Running: %{local} as %{remote}"
         upload_path_not_set: "`upload_path` must be set for the shell provisioner."
+        interactive_not_elevated: "To be interactive, it must also be privileged."
 
       ansible:
         no_playbook: "`playbook` must be set for the Ansible provisioner."
